@@ -16,4 +16,4 @@ no_index:
 requires: 
   Egg::Release: 2
   Net::Ping: 2.31
-version: 2.00
+version: 2.01
