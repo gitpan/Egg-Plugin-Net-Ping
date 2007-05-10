@@ -1,0 +1,19 @@
+abstract: Net::Ping for Egg plugin.
+author: Masatoshi Mizuno E<lt>lusheE<64>cpan.orgE<gt>
+build_requires: 
+  Test::Perl::Critic: 0
+  Test::Pod: 0
+  Test::Pod::Coverage: 0
+  Test::Simple: 0
+distribution_type: module
+generated_by: Module::Install version 0.64
+license: perl
+name: Egg-Plugin-Net-Ping
+no_index: 
+  directory: 
+    - inc
+    - t
+requires: 
+  Egg::Release: 2
+  Net::Ping: 2.31
+version: 2.00

@@ -1,0 +1,8 @@
+Revision history for Perl extension Egg::Plugin::Net::Ping.
+
+2.00  2007/05/04
+	- Corresponded to Egg::Release v2.00.
+
+0.01  Sat Dec 23 14:26:45 2006 GMT
+	- original version; created by Egg::Helper::PerlModuleMaker v0.02 with
+	  module name Egg-Plugin-Net-Ping
