@@ -1,4 +1,15 @@
 package Egg::Plugin::Net::Ping;
+#
+# Masatoshi Mizuno E<lt>lusheE<64>cpan.orgE<gt>
+#
+# $Id: Ping.pm 208 2007-11-03 14:29:55Z lushe $
+#
+use strict;
+use warnings;
+use Net::Ping;
+use Carp qw/croak/;
+
+our $VERSION= '2.02';
 
 =head1 NAME
 
@@ -61,24 +72,6 @@ Default is '0.5'.
 
 Own host address.
 
-=cut
-use strict;
-use warnings;
-use Net::Ping;
-use Carp qw/croak/;
-
-our $VERSION= '2.01';
-
-sub _setup {
-	my($e)= @_;
-	my $conf= $e->config->{plugin_net_ping} ||= {};
-	$conf->{protcol} ||= 'tcp';
-	$conf->{timeout} ||= 3;
-	$conf->{retry}   ||= 1;
-	$conf->{wait}    ||= 0.5;
-	$e->next::method;
-}
-
 =head1 METHODS
 
 =head2 ping ( [TARGET_HOST], [ARGS_HASH] )
@@ -92,6 +85,16 @@ ARGS_HASH overwrites initialization.
   $e->ping('192.168.1.111', retry => 5 );
 
 =cut
+
+sub _setup {
+	my($e)= @_;
+	my $conf= $e->config->{plugin_net_ping} ||= {};
+	$conf->{protcol} ||= 'tcp';
+	$conf->{timeout} ||= 3;
+	$conf->{retry}   ||= 1;
+	$conf->{wait}    ||= 0.5;
+	$e->next::method;
+}
 sub ping {
 	my $e= shift;
 	my $host= shift || croak q{ I want target host. };
