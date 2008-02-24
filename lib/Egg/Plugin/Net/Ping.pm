@@ -2,14 +2,49 @@ package Egg::Plugin::Net::Ping;
 #
 # Masatoshi Mizuno E<lt>lusheE<64>cpan.orgE<gt>
 #
-# $Id: Ping.pm 208 2007-11-03 14:29:55Z lushe $
+# $Id: Ping.pm 271 2008-02-24 06:52:22Z lushe $
 #
 use strict;
 use warnings;
 use Net::Ping;
 use Carp qw/croak/;
 
-our $VERSION= '2.02';
+our $VERSION= '3.00';
+
+sub _setup {
+	my($e)= @_;
+	my $conf= $e->config->{plugin_net_ping} ||= {};
+	$conf->{protcol} ||= 'tcp';
+	$conf->{timeout} ||= 3;
+	$conf->{retry}   ||= 1;
+	$conf->{wait}    ||= 0.5;
+	$e->next::method;
+}
+sub ping {
+	my $e= shift;
+	my $host= shift || croak q{ I want target host. };
+	my %option= (
+	  %{$e->config->{plugin_net_ping}},
+	  %{ $_[1] ? {@_}: ($_[0] || {}) },
+	  );
+	$option{retry}= 5 if $option{retry}> 5;
+
+	my $ping= Net::Ping->new($option{protcol});
+	$ping->bind($option{self_addr}) if $option{self_addr};
+
+	my($result, $count);
+	for (1..$option{retry}) {
+		++$result if $ping->ping($host, $option{timeout});
+		++$count>= $option{retry} and last;
+		select(undef, undef, undef, $option{wait});  ## no critic
+	}
+
+	$result || 0;
+}
+
+1;
+
+__END__
 
 =head1 NAME
 
@@ -44,7 +79,7 @@ It is a plug-in to investigate while arbitrary PC is operating by L<Net::Ping>.
 
 Please set 'plugin_net_ping'.
 
-=head2 protcol
+=head3 protcol
 
 They are the protocols such as tcp and udp.
 
@@ -52,23 +87,23 @@ Default is 'tcp'.
 
 * I do not think that it operates well perhaps excluding tcp.
 
-=head2 timeout
+=head3 timeout
 
 Time to wait for answer of ping.
 
 Default is '3'.
 
-=head2 retry
+=head3 retry
 
 Frequency in which ping is done.
 
-=head2 wait
+=head3 wait
 
 Waiting time to doing next retry.
 
 Default is '0.5'.
 
-=head2 self_addr
+=head3 self_addr
 
 Own host address.
 
@@ -84,51 +119,18 @@ ARGS_HASH overwrites initialization.
 
   $e->ping('192.168.1.111', retry => 5 );
 
-=cut
-
-sub _setup {
-	my($e)= @_;
-	my $conf= $e->config->{plugin_net_ping} ||= {};
-	$conf->{protcol} ||= 'tcp';
-	$conf->{timeout} ||= 3;
-	$conf->{retry}   ||= 1;
-	$conf->{wait}    ||= 0.5;
-	$e->next::method;
-}
-sub ping {
-	my $e= shift;
-	my $host= shift || croak q{ I want target host. };
-	my %option= (
-	  %{$e->config->{plugin_net_ping}},
-	  %{ $_[1] ? {@_}: ($_[0] || {}) },
-	  );
-	$option{retry}= 5 if $option{retry}> 5;
-
-	my $ping= Net::Ping->new($option{protcol});
-	$ping->bind($option{self_addr}) if $option{self_addr};
-
-	my($result, $count);
-	for (1..$option{retry}) {
-		++$result if $ping->ping($host, $option{timeout});
-		++$count>= $option{retry} and last;
-		select(undef, undef, undef, $option{wait});  ## no critic
-	}
-
-	$result || 0;
-}
-
 =head1 SEE ALSO
 
-L<Net::Ping>,
 L<Egg::Release>,
+L<Net::Ping>,
 
 =head1 AUTHOR
 
 Masatoshi Mizuno E<lt>lusheE<64>cpan.orgE<gt>
 
-=head1 COPYRIGHT
+=head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2007 by Bee Flag, Corp. E<lt>L<http://egg.bomcity.com/>E<gt>, All Rights Reserved.
+Copyright (C) 2008 Bee Flag, Corp. E<lt>L<http://egg.bomcity.com/>E<gt>, All Rights Reserved.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.6 or,
@@ -136,4 +138,3 @@ at your option, any later version of Perl 5 you may have available.
 
 =cut
 
-1;

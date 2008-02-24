@@ -1,6 +1,6 @@
 ---
 name: Egg-Plugin-Net-Ping
-version: 2.02
+version: 3.00
 author:
   - 'Masatoshi Mizuno E<lt>lusheE<64>cpan.orgE<gt>'
 abstract: Net::Ping for Egg plugin.
@@ -17,8 +17,8 @@ requires:
 provides:
   Egg::Plugin::Net::Ping:
     file: lib/Egg/Plugin/Net/Ping.pm
-    version: 2.02
-generated_by: Module::Build version 0.2805
+    version: 3.00
+generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
   version: 1.2
