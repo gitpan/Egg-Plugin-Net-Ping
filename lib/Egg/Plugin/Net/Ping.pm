@@ -9,7 +9,7 @@ use warnings;
 use Net::Ping;
 use Carp qw/croak/;
 
-our $VERSION= '3.00';
+our $VERSION= '3.01';
 
 sub _setup {
 	my($e)= @_;
